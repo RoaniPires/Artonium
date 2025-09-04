@@ -15,13 +15,10 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     
-    <!-- 
-      FUTURAS DEPENDÊNCIAS (comentadas por enquanto)
-      Descomente quando precisarmos de banco de dados:
-      
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
-    -->
+    <!-- Entity Framework Core para PostgreSQL -->
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

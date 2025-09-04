@@ -1,32 +1,30 @@
 # ====================================================
-# DOCKER COMPOSE - CONFIGURAÇÃO DE APRENDIZADO
+# ARTONIUM - SISTEMA DE PERSONAGENS TORMENTA 20
 # ====================================================
-# Este arquivo define como nossa aplicação será executada no Docker
-# Por enquanto, apenas a API (sem banco de dados)
 
 services:
   # ====================================================
-  # SERVIÇO DA API
+  # API .NET 8
   # ====================================================
   artonium-api:
     build:
       context: .
-      dockerfile: Dockerfile.dev  # Usa Dockerfile específico para desenvolvimento
+      dockerfile: Dockerfile.dev
     container_name: artonium-api
     ports:
-      - "5000:80"               # Mapeia porta 5000 do host para porta 80 do container
+      - "5000:80"
     environment:
-      # Variáveis de ambiente que o .NET vai usar
-      - ASPNETCORE_ENVIRONMENT=Development  # Modo de desenvolvimento
-      - ASPNETCORE_URLS=http://+:80         # URL onde a API vai escutar
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
     volumes:
-      # 🔥 HOT RELOAD: Monta o código local dentro do container
-      - .:/app                  # Monta pasta atual em /app
-      - /app/bin                # Exclui bin (gerado pelo container)
-      - /app/obj                # Exclui obj (gerado pelo container)
+      - .:/app
+      - /app/bin
+      - /app/obj
     networks:
-      - artonium-network        # Rede interna para comunicação entre containers
-    restart: unless-stopped     # Reinicia automaticamente se parar
+      - artonium-network
+    restart: unless-stopped
+    depends_on:
+      - artonium-db
     develop:
       watch:
         - action: rebuild
@@ -36,34 +34,30 @@ services:
             - obj/
 
   # ====================================================
-  # FUTURO: BANCO DE DADOS (comentado por enquanto)
+  # BANCO DE DADOS POSTGRESQL
   # ====================================================
-  # Descomente quando precisarmos adicionar PostgreSQL:
-  #
-  # db:
-  #   image: postgres:15
-  #   container_name: artonium-db
-  #   environment:
-  #     POSTGRES_DB: artonium
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres123
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   networks:
-  #     - artonium-network
-  #   restart: unless-stopped
+  artonium-db:
+    image: postgres:15
+    container_name: artonium-db
+    environment:
+      POSTGRES_DB: artonium
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - artonium-network
+    restart: unless-stopped
 
 # ====================================================
-# VOLUMES (para persistir dados)
+# VOLUMES E REDES
 # ====================================================
-# volumes:
-#   postgres_data:  # Descomente quando adicionar o banco
+volumes:
+  postgres_data:
+    driver: local
 
-# ====================================================
-# REDES (para comunicação entre containers)
-# ====================================================
 networks:
   artonium-network:
-    driver: bridge  # Tipo de rede para conectar containers
+    driver: bridge

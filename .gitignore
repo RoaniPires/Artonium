@@ -178,9 +178,56 @@ TestResults/
 docs/_build/
 
 # ====================================================
+# DOCKER E CONTAINERS
+# ====================================================
+# Dados persistentes do PostgreSQL
+postgres_data/
+pgdata/
+
+# Logs do Docker
+docker-compose.override.yml
+docker-compose.override.*.yml
+
+# ====================================================
+# ENTITY FRAMEWORK
+# ====================================================
+# Migrações são commitadas, mas ignorar backups
+*.bak
+*.backup
+
+# ====================================================
+# DESENVOLVIMENTO LOCAL
+# ====================================================
+# Arquivos de configuração local (senhas, etc)
+appsettings.Local.json
+appsettings.*.Local.json
+
+# Dados de teste local
+data/
+test-data/
+
+# Logs da aplicação
+logs/
+*.log
+*.log.*
+
+# ====================================================
+# FERRAMENTAS DE DESENVOLVIMENTO
+# ====================================================
+# JetBrains IDEs (Rider, IntelliJ)
+.idea/
+*.sln.iml
+
+# Ferramentas CLI do Entity Framework
+ef-migrations.json
+
+# ====================================================
 # FINAL - ARQUIVOS ESPECÍFICOS DO PROJETO ARTONIUM
 # ====================================================
-# Adicione aqui arquivos específicos do seu projeto
-# Exemplo:
-# meus-dados-locais/
-# configuracoes-pessoais.json
+# Backups de banco locais
+*.sql.bak
+dump.sql
+
+# Arquivos temporários de desenvolvimento
+temp/
+tmp/
