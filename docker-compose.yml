@@ -1,0 +1,69 @@
+# ====================================================
+# DOCKER COMPOSE - CONFIGURAÇÃO DE APRENDIZADO
+# ====================================================
+# Este arquivo define como nossa aplicação será executada no Docker
+# Por enquanto, apenas a API (sem banco de dados)
+
+services:
+  # ====================================================
+  # SERVIÇO DA API
+  # ====================================================
+  artonium-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev  # Usa Dockerfile específico para desenvolvimento
+    container_name: artonium-api
+    ports:
+      - "5000:80"               # Mapeia porta 5000 do host para porta 80 do container
+    environment:
+      # Variáveis de ambiente que o .NET vai usar
+      - ASPNETCORE_ENVIRONMENT=Development  # Modo de desenvolvimento
+      - ASPNETCORE_URLS=http://+:80         # URL onde a API vai escutar
+    volumes:
+      # 🔥 HOT RELOAD: Monta o código local dentro do container
+      - .:/app                  # Monta pasta atual em /app
+      - /app/bin                # Exclui bin (gerado pelo container)
+      - /app/obj                # Exclui obj (gerado pelo container)
+    networks:
+      - artonium-network        # Rede interna para comunicação entre containers
+    restart: unless-stopped     # Reinicia automaticamente se parar
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+          ignore:
+            - bin/
+            - obj/
+
+  # ====================================================
+  # FUTURO: BANCO DE DADOS (comentado por enquanto)
+  # ====================================================
+  # Descomente quando precisarmos adicionar PostgreSQL:
+  #
+  # db:
+  #   image: postgres:15
+  #   container_name: artonium-db
+  #   environment:
+  #     POSTGRES_DB: artonium
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres123
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - artonium-network
+  #   restart: unless-stopped
+
+# ====================================================
+# VOLUMES (para persistir dados)
+# ====================================================
+# volumes:
+#   postgres_data:  # Descomente quando adicionar o banco
+
+# ====================================================
+# REDES (para comunicação entre containers)
+# ====================================================
+networks:
+  artonium-network:
+    driver: bridge  # Tipo de rede para conectar containers

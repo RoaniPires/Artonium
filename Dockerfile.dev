@@ -1,0 +1,23 @@
+# ====================================================
+# DOCKERFILE PARA DESENVOLVIMENTO COM HOT RELOAD
+# ====================================================
+# Este Dockerfile é otimizado para desenvolvimento, não para produção
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+WORKDIR /app
+
+# Instalar dotnet watch (ferramenta de hot reload)
+RUN dotnet tool install --global dotnet-watch
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copiar apenas o arquivo de projeto primeiro (para cache de dependências)
+COPY *.csproj ./
+RUN dotnet restore
+
+# Expor as portas
+EXPOSE 80
+EXPOSE 443
+
+# 🔥 COMANDO COM HOT RELOAD
+# dotnet watch vai monitorar mudanças nos arquivos e recompilar automaticamente
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:80"]

@@ -1,0 +1,17 @@
+# Ignorar arquivos desnecessários para o build do Docker
+bin/
+obj/
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+README.md
+.vs/
+.vscode/
+*.user
+*.suo
+*.cache
+.DS_Store
+Thumbs.db
+node_modules/
