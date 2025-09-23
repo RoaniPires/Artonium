@@ -1,6 +1,7 @@
 # ====================================================
 # DOCKERFILE PARA DESENVOLVIMENTO COM HOT RELOAD
 # ====================================================
+# Ambiente de desenvolvimento da API (.NET 8) integrado ao MongoDB via docker-compose
 # Este Dockerfile é otimizado para desenvolvimento, não para produção
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0
@@ -10,8 +11,9 @@ WORKDIR /app
 RUN dotnet tool install --global dotnet-watch
 ENV PATH="$PATH:/root/.dotnet/tools"
 
-# Copiar apenas o arquivo de projeto primeiro (para cache de dependências)
-COPY *.csproj ./
+# Copiar arquivos do projeto
+COPY . .
+# Restaurar dependências
 RUN dotnet restore
 
 # Expor as portas

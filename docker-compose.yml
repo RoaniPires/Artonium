@@ -24,7 +24,7 @@ services:
       - artonium-network
     restart: unless-stopped
     depends_on:
-      - artonium-db
+      - mongo
     develop:
       watch:
         - action: rebuild
@@ -34,28 +34,26 @@ services:
             - obj/
 
   # ====================================================
-  # BANCO DE DADOS POSTGRESQL
+  # BANCO DE DADOS MONGODB
   # ====================================================
-  artonium-db:
-    image: postgres:15
-    container_name: artonium-db
+  mongo:
+    image: mongo:7
+    container_name: artonium-mongo
     environment:
-      POSTGRES_DB: artonium
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      MONGO_INITDB_DATABASE: artonium
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mongo_data:/data/db
     networks:
       - artonium-network
     restart: unless-stopped
 
 # ====================================================
-# VOLUMES E REDES
+# VOLUMES E REDES (MONGODB)
 # ====================================================
 volumes:
-  postgres_data:
+  mongo_data:
     driver: local
 
 networks:

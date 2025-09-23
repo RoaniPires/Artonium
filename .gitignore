@@ -74,13 +74,13 @@ packages/
 .docker/
 docker-compose.override.yml
 
+# Dados persistentes do MongoDB
+mongo_data/
+data/
+
 # ====================================================
 # DADOS E VOLUMES LOCAIS
 # ====================================================
-# Volumes de banco de dados local
-postgres_data/
-data/
-volumes/
 
 # ====================================================
 # CONFIGURAÇÕES SENSÍVEIS E AMBIENTE
@@ -180,9 +180,6 @@ docs/_build/
 # ====================================================
 # DOCKER E CONTAINERS
 # ====================================================
-# Dados persistentes do PostgreSQL
-postgres_data/
-pgdata/
 
 # Logs do Docker
 docker-compose.override.yml

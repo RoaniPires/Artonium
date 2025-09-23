@@ -5,6 +5,8 @@
 // Por enquanto apenas ID e Nome, mas vai crescer!
 
 using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ArtoniumApi.Models;
 
@@ -14,9 +16,11 @@ namespace ArtoniumApi.Models;
 public class Personagem
 {
     /// <summary>
-    /// Identificador único do personagem
+    /// Identificador único do personagem (MongoDB ObjectId)
     /// </summary>
-    public int Id { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
 
     /// <summary>
     /// Nome do personagem (obrigatório, máximo 100 caracteres)

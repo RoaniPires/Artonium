@@ -4,8 +4,7 @@
 // Gerencia operações CRUD de personagens
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ArtoniumApi.Data;
+using ArtoniumApi.Services;
 using ArtoniumApi.Models;
 
 namespace ArtoniumApi.Controllers;
@@ -15,16 +14,19 @@ namespace ArtoniumApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+/// <summary>
+/// Controller para gerenciar personagens de Tormenta 20 usando MongoDB
+/// </summary>
 public class PersonagensController : ControllerBase
 {
-    private readonly ArtoniumDbContext _context;
+    private readonly PersonagemService _service;
 
     /// <summary>
-    /// Construtor que recebe o contexto do banco via Dependency Injection
+    /// Construtor que recebe o serviço de personagens via Dependency Injection
     /// </summary>
-    public PersonagensController(ArtoniumDbContext context)
+    public PersonagensController(PersonagemService service)
     {
-        _context = context;
+        _service = service;
     }
 
     /// <summary>
@@ -34,28 +36,23 @@ public class PersonagensController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Personagem>>> GetPersonagens()
     {
-        var personagens = await _context.Personagens
-            .OrderBy(p => p.Nome)
-            .ToListAsync();
-
+        var personagens = await _service.GetAllAsync();
         return Ok(personagens);
     }
 
     /// <summary>
     /// Busca um personagem por ID
     /// </summary>
-    /// <param name="id">ID do personagem</param>
+    /// <param name="id">ID do personagem (MongoDB ObjectId)</param>
     /// <returns>Personagem encontrado ou 404</returns>
     [HttpGet("{id}")]
-    public async Task<ActionResult<Personagem>> GetPersonagem(int id)
+    public async Task<ActionResult<Personagem>> GetPersonagem(string id)
     {
-        var personagem = await _context.Personagens.FindAsync(id);
-
+        var personagem = await _service.GetByIdAsync(id);
         if (personagem == null)
         {
             return NotFound($"Personagem com ID {id} não encontrado");
         }
-
         return Ok(personagem);
     }
 
@@ -67,85 +64,54 @@ public class PersonagensController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Personagem>> CreatePersonagem(Personagem personagem)
     {
-        // Valida o modelo
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-
-        // Define a data de criação
         personagem.CriadoEm = DateTime.UtcNow;
-
-        // Adiciona ao contexto
-        _context.Personagens.Add(personagem);
-        await _context.SaveChangesAsync();
-
-        // Retorna 201 Created com o personagem criado
+        await _service.CreateAsync(personagem);
         return CreatedAtAction(
-            nameof(GetPersonagem), 
-            new { id = personagem.Id }, 
+            nameof(GetPersonagem),
+            new { id = personagem.Id.ToString() },
             personagem);
     }
 
     /// <summary>
     /// Atualiza um personagem existente
     /// </summary>
-    /// <param name="id">ID do personagem</param>
+    /// <param name="id">ID do personagem (MongoDB ObjectId)</param>
     /// <param name="personagem">Novos dados do personagem</param>
     /// <returns>204 No Content ou erro</returns>
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdatePersonagem(int id, Personagem personagem)
+    public async Task<IActionResult> UpdatePersonagem(string id, Personagem personagem)
     {
-        if (id != personagem.Id)
-        {
-            return BadRequest("ID da URL não confere com ID do personagem");
-        }
-
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-
-        // Verifica se o personagem existe
-        var personagemExistente = await _context.Personagens.FindAsync(id);
-        if (personagemExistente == null)
+        var existente = await _service.GetByIdAsync(id);
+        if (existente == null)
         {
             return NotFound($"Personagem com ID {id} não encontrado");
         }
-
-        // Atualiza apenas os campos permitidos
-        personagemExistente.Nome = personagem.Nome;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return Conflict("Erro de concorrência. Tente novamente.");
-        }
-
+    await _service.UpdateAsync(id, personagem);
         return NoContent();
     }
 
     /// <summary>
     /// Remove um personagem
     /// </summary>
-    /// <param name="id">ID do personagem</param>
+    /// <param name="id">ID do personagem (MongoDB ObjectId)</param>
     /// <returns>204 No Content ou erro</returns>
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePersonagem(int id)
+    public async Task<IActionResult> DeletePersonagem(string id)
     {
-        var personagem = await _context.Personagens.FindAsync(id);
-        
-        if (personagem == null)
+        var existente = await _service.GetByIdAsync(id);
+        if (existente == null)
         {
             return NotFound($"Personagem com ID {id} não encontrado");
         }
-
-        _context.Personagens.Remove(personagem);
-        await _context.SaveChangesAsync();
-
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 }
