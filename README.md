@@ -3,93 +3,126 @@
 > **Sistema de gerenciamento de personagens para Tormenta 20**
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
-![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?style=flat-square&logo=mongodb&logoColor=white)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+[![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black)](https://swagger.io/)
 
 ## 📖 Sobre o Projeto
 
-Artonium é uma **API REST moderna** para gerenciar personagens de RPG do sistema **Tormenta 20**. Permite criar, editar, consultar e excluir personagens com persistência em banco MongoDB.
+API REST para gerenciar personagens de RPG do sistema **Tormenta 20**. Desenvolvida em **.NET 8** com **Entity Framework Core** e **PostgreSQL**.
 
-Desenvolvido em **.NET 8** com **MongoDB.Driver**.
+## 🚀 Como Executar
 
-## ⚡ Quick Start
+### 1. Pré-requisitos
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Docker](https://www.docker.com/get-started)
 
-### Pré-requisitos
-- [Docker](https://www.docker.com/get-started) instalado
+### 2. Primeira execução
 
-### Executando o projeto
-
-```bash
+```powershell
 # Clone o repositório
 git clone https://github.com/RoaniPires/Artonium.git
 cd Artonium
 
-# Execute com Docker (API + MongoDB)
-docker-compose up --build
+# Inicie o PostgreSQL
+docker-compose up -d
+
+# Restaure as dependências
+dotnet restore
+
+# Execute a aplicação
+dotnet run
 ```
 
-### Acessando a aplicação
-
-Após executar, a aplicação estará disponível em:
-
-- **🌐 API**: http://localhost:5000
-- **📚 Documentação Swagger**: http://localhost:5000/swagger
-- **🍃 MongoDB**: localhost:27017
-
-## 🚀 Funcionalidades Atuais
-
-### ⚔️ **Gerenciamento de Personagens**
-- ✅ **Criar personagens** com nome e data de criação
-- ✅ **Listar todos** os personagens
-- ✅ **Buscar por ID** específico
-- ✅ **Atualizar** informações do personagem
-- ✅ **Excluir** personagens
-
-### 🛠️ **Recursos Técnicos**
-- ✅ **Hot Reload** - Mudanças aplicadas automaticamente
-- ✅ **Persistência** - Dados salvos em MongoDB
-- ✅ **Validações** - Nome obrigatório, tamanho máximo
-- ✅ **Documentação** - Swagger UI automática
-- ✅ **Docker** - Ambiente completo containerizado
-
-## 📋 Endpoints da API
-
-| Método | Endpoint | Descrição | Exemplo |
-|--------|----------|-----------|---------|
-| `GET` | `/api/personagens` | Lista todos os personagens | `[]` ou `[{...}]` |
-| `GET` | `/api/personagens/{id}` | Busca personagem por ID | `{"id":1,"nome":"..."}` |
-| `POST` | `/api/personagens` | Cria novo personagem | Body: `{"nome":"Arthag"}` |
-| `PUT` | `/api/personagens/{id}` | Atualiza personagem | Body: `{"id":1,"nome":"..."}` |
-| `DELETE` | `/api/personagens/{id}` | Remove personagem | Status: `204 No Content` |
+### 3. Acesse a aplicação
+- **API**: http://localhost:5000
+- **Swagger**: http://localhost:5000/swagger
 
 ## 🛠️ Tecnologias
 
-[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
-[![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black)](https://swagger.io/)
+- **.NET 8** - Framework principal
+- **PostgreSQL** - Banco de dados
+- **Entity Framework Core** - ORM
+- **Docker** - Container para PostgreSQL
+- **Swagger** - Documentação da API
 
-## 🐳 Comandos Docker Úteis
+## 🐛 Problemas Comuns
 
-```bash
-# Subir aplicação
+### ❌ .NET SDK não encontrado
+**Erro**: `'dotnet' is not recognized`
+```powershell
+# Instale o .NET 8 SDK
+# https://dotnet.microsoft.com/download/dotnet/8.0
+# Verifique a instalação
+dotnet --version
+```
+
+### ❌ Docker não encontrado
+**Erro**: `'docker' is not recognized`
+```powershell
+# Instale o Docker Desktop
+# https://www.docker.com/get-started
+# Verifique se está rodando
+docker --version
+```
+
+### ❌ PostgreSQL não conecta
+**Erro**: `Connection refused` ou `No connection could be made`
+```powershell
+# Verifique se o PostgreSQL está rodando
+docker ps
+
+# Se não estiver, inicie o container
 docker-compose up -d
 
-# Ver logs
-docker-compose logs -f artonium-api
+# Aguarde alguns segundos e tente novamente
+```
 
-# Parar aplicação
-docker-compose down
+### ❌ Swagger não carrega
+**Problema**: Swagger retorna erro 404 ou não carrega
+```powershell
+# Verifique se está acessando a URL correta
+# ✅ Correto: http://localhost:5000/swagger
+# ❌ Errado: http://localhost:5000/swagger/index.html
 
-# Reconstruir containers
-docker-compose up --build --force-recreate
+# O Swagger agora funciona em todos os ambientes (Development/Production)
+```
 
-# Acessar container da API
-docker exec -it artonium-api bash
+### ❌ Porta 5000 já está em uso
+**Erro**: `Address already in use`
+```powershell
+# Execute em outra porta
+dotnet run --urls "http://localhost:5001"
 
-# Acessar banco MongoDB
-docker exec -it artonium-mongo mongosh
+# Ou pare outros processos dotnet
+taskkill /f /im dotnet.exe
+```
+
+### ❌ Dependências não restauradas
+**Erro**: Erros de compilação sobre pacotes não encontrados
+```powershell
+# Limpe e restaure as dependências
+dotnet clean
+dotnet restore
+dotnet build
+```
+
+## ✅ Teste Rápido
+
+Após executar `dotnet run`, teste se tudo está funcionando:
+
+```powershell
+# 1. Teste o health check
+curl http://localhost:5000/
+
+# 2. Teste a API (deve retornar [])
+curl http://localhost:5000/api/personagens
+
+# 3. Crie um personagem
+curl -X POST http://localhost:5000/api/personagens -H "Content-Type: application/json" -d '{"nome":"Teste"}'
+
+# 4. Abra o Swagger no navegador
+start http://localhost:5000/swagger
 ```
 
 ---

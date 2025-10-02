@@ -1,61 +1,33 @@
 # ====================================================
 # ARTONIUM - SISTEMA DE PERSONAGENS TORMENTA 20
 # ====================================================
+# Docker Compose com PostgreSQL
 
 services:
   # ====================================================
-  # API .NET 8
+  # BANCO DE DADOS POSTGRESQL
   # ====================================================
-  artonium-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: artonium-api
-    ports:
-      - "5000:80"
+  postgres:
+    image: postgres:16
+    container_name: artonium-postgres
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    volumes:
-      - .:/app
-      - /app/bin
-      - /app/obj
-    networks:
-      - artonium-network
-    restart: unless-stopped
-    depends_on:
-      - mongo
-    develop:
-      watch:
-        - action: rebuild
-          path: .
-          ignore:
-            - bin/
-            - obj/
-
-  # ====================================================
-  # BANCO DE DADOS MONGODB
-  # ====================================================
-  mongo:
-    image: mongo:7
-    container_name: artonium-mongo
-    environment:
-      MONGO_INITDB_DATABASE: artonium
+      POSTGRES_DB: artonium
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
     ports:
-      - "27017:27017"
+      - "5432:5432"
     volumes:
-      - mongo_data:/data/db
-    networks:
-      - artonium-network
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 # ====================================================
-# VOLUMES E REDES (MONGODB)
+# VOLUMES (POSTGRESQL)
 # ====================================================
 volumes:
-  mongo_data:
+  postgres_data:
     driver: local
-
-networks:
-  artonium-network:
-    driver: bridge

@@ -1,36 +1,40 @@
-// ====================================================
-// MODELO DE PERSONAGEM - TORMENTA 20
-// ====================================================
-// Esta classe representa um personagem no sistema
-// Por enquanto apenas ID e Nome, mas vai crescer!
-
 using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtoniumApi.Models;
 
-/// <summary>
-/// Representa um personagem de Tormenta 20
-/// </summary>
+[Table("personagens")]
 public class Personagem
 {
-    /// <summary>
-    /// Identificador único do personagem (MongoDB ObjectId)
-    /// </summary>
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; private set; }
 
-    /// <summary>
-    /// Nome do personagem (obrigatório, máximo 100 caracteres)
-    /// </summary>
     [Required(ErrorMessage = "Nome é obrigatório")]
     [StringLength(100, ErrorMessage = "Nome deve ter no máximo 100 caracteres")]
-    public string Nome { get; set; } = string.Empty;
+    [Column("nome")]
+    public string Nome { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Data de criação do personagem (automaticamente preenchida)
-    /// </summary>
-    public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
+    [Column("criado_em")]
+    public DateTime CriadoEm { get; private set; }
+
+    private Personagem() { }
+    public Personagem(string nome)
+    {
+        SetNome(nome);
+        CriadoEm = DateTime.UtcNow;
+    }
+
+    public void SetNome(string nome)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("Nome não pode ser vazio", nameof(nome));
+
+        if (nome.Length > 100)
+            throw new ArgumentException("Nome deve ter no máximo 100 caracteres", nameof(nome));
+
+        Nome = nome.Trim();
+    }
+
+    public bool IsValido() => !string.IsNullOrWhiteSpace(Nome) && Nome.Length <= 100;
 }

@@ -1,8 +1,7 @@
 # ====================================================
-# .GITIGNORE PARA PROJETO .NET 8 + DOCKER
+# .GITIGNORE PARA PROJETO .NET 8 + POSTGRESQL + DOCKER
 # ====================================================
-# Este arquivo define quais arquivos/pastas o Git deve ignorar
-# Mantém o repositório limpo, sem arquivos desnecessários
+# Artonium API - Sistema de Personagens Tormenta 20
 
 # ====================================================
 # ARQUIVOS DE BUILD E COMPILAÇÃO (.NET)
@@ -74,8 +73,8 @@ packages/
 .docker/
 docker-compose.override.yml
 
-# Dados persistentes do MongoDB
-mongo_data/
+# Dados persistentes do PostgreSQL
+postgres_data/
 data/
 
 # ====================================================
@@ -178,53 +177,34 @@ TestResults/
 docs/_build/
 
 # ====================================================
-# DOCKER E CONTAINERS
+# ENTITY FRAMEWORK E POSTGRESQL
 # ====================================================
+# Migrations são versionadas no Git - não ignorar pasta Migrations/
+# Mas ignorar backups e dumps
+Migrations/*.backup
+*.sql.bak
+dump.sql
+pg_dump.sql
+*.db
+*.sqlite
+*.db-*
 
-# Logs do Docker
-docker-compose.override.yml
-docker-compose.override.*.yml
+# Entity Framework CLI
+.dotnet-tools.json.bak
 
 # ====================================================
-# ENTITY FRAMEWORK
+# ARTONIUM - ARQUIVOS ESPECÍFICOS DO PROJETO
 # ====================================================
-# Migrações são commitadas, mas ignorar backups
-*.bak
-*.backup
+# Dados locais e temporários
+data/
+temp/
+tmp/
+test-data/
 
-# ====================================================
-# DESENVOLVIMENTO LOCAL
-# ====================================================
-# Arquivos de configuração local (senhas, etc)
+# Configurações locais sensíveis
 appsettings.Local.json
 appsettings.*.Local.json
 
-# Dados de teste local
-data/
-test-data/
-
-# Logs da aplicação
+# Logs específicos da aplicação
 logs/
-*.log
-*.log.*
-
-# ====================================================
-# FERRAMENTAS DE DESENVOLVIMENTO
-# ====================================================
-# JetBrains IDEs (Rider, IntelliJ)
-.idea/
-*.sln.iml
-
-# Ferramentas CLI do Entity Framework
-ef-migrations.json
-
-# ====================================================
-# FINAL - ARQUIVOS ESPECÍFICOS DO PROJETO ARTONIUM
-# ====================================================
-# Backups de banco locais
-*.sql.bak
-dump.sql
-
-# Arquivos temporários de desenvolvimento
-temp/
-tmp/
+artonium*.log

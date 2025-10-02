@@ -1,20 +1,11 @@
-// ====================================================
-// ARTONIUM API - SISTEMA DE PERSONAGENS TORMENTA 20
-// ====================================================
-// Configuração principal da aplicação
-
-using MongoDB.Driver;
+using Microsoft.EntityFrameworkCore;
+using ArtoniumApi.Data;
+using ArtoniumApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ====================================================
-// CONFIGURAÇÃO DOS SERVIÇOS
-// ====================================================
-
-// Controllers para APIs REST
+// Configuração dos serviços
 builder.Services.AddControllers();
-
-// Documentação automática
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -26,36 +17,35 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configuração do banco MongoDB
-builder.Services.AddSingleton<IMongoClient>(sp =>
-    new MongoClient(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddSingleton<ArtoniumApi.Services.PersonagemService>();
+// PostgreSQL + Entity Framework
+builder.Services.AddDbContext<ArtoniumContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ====================================================
-// CONSTRUÇÃO DA APLICAÇÃO
-// ====================================================
+// Serviços da aplicação
+builder.Services.AddScoped<IPersonagemService, PersonagemService>();
+
 var app = builder.Build();
 
-
-// ====================================================
-// CONFIGURAÇÃO DO PIPELINE
-// ====================================================
-
-// Swagger em desenvolvimento
-if (app.Environment.IsDevelopment())
+// Criação automática do banco
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Artonium API v1");
-        c.RoutePrefix = "swagger";
-    });
+    var context = scope.ServiceProvider.GetRequiredService<ArtoniumContext>();
+    context.Database.EnsureCreated();
 }
+
+// Pipeline de requisições
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Artonium API v1");
+    c.RoutePrefix = "swagger";
+    c.DocumentTitle = "Artonium API - Tormenta 20";
+});
 
 app.UseAuthorization();
 app.MapControllers();
 
-// Endpoint de saúde da aplicação
+// Health check
 app.MapGet("/", () => "⚔️ Artonium API - Sistema de Personagens Tormenta 20")
    .WithName("HealthCheck")
    .WithOpenApi();
